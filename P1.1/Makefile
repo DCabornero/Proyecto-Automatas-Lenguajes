@@ -1,9 +1,11 @@
 CC=gcc
 CFLAGS= -Wall -g -pedantic
 EJS = ejemplo1 ejemplo3 ejemplo4 ejemplo2
+ASM = ej1 ej2 ej3 ej4
+NASM = nasm -g -o
+NFLAGS= -f elf32
 
-
-.PHONY: all
+.PHONY: all #Genera los archivos de ejecución de los programas en C
 all: $(EJS)
 
 generacion.o: generacion.c generacion.h
@@ -33,8 +35,49 @@ ejemplo4: ejemplo4.o generacion.o
 ejemplo4.o: ejemplo4.c generacion.h
 	$(CC) $(CFLAGS) -c ejemplo4.c
 
+.PHONY: nasm #Ejecuta los programas en C y crea los ejecutables en ensamblador
+nasm: $(ASM)
 
+ej1.asm: ejemplo1
+	./ejemplo1 ej1.asm
 
-.PHONY: clean
+ej1.o: ej1.asm
+	$(NASM) ej1.o $(NFLAGS) ej1.asm
+
+ej1: ej1.o alfalib.o
+	$(CC) -m32 -o ej1 ej1.o alfalib.o
+
+ej2.asm: ejemplo2
+	./ejemplo2 ej2.asm
+
+ej2.o: ej2.asm
+	$(NASM) ej2.o $(NFLAGS) ej2.asm
+
+ej2: ej2.o alfalib.o
+	$(CC) -m32 -o ej2 ej2.o alfalib.o
+
+ej3.asm: ejemplo3
+	./ejemplo3 ej3.asm
+
+ej3.o: ej3.asm
+	$(NASM) ej3.o $(NFLAGS) ej3.asm
+
+ej3: ej3.o alfalib.o
+	$(CC) -m32 -o ej3 ej3.o alfalib.o
+
+ej4.asm: ejemplo4
+	./ejemplo4 ej4.asm
+
+ej4.o: ej4.asm
+	$(NASM) ej4.o $(NFLAGS) ej4.asm
+
+ej4: ej4.o alfalib.o
+	$(CC) -m32 -o ej4 ej4.o alfalib.o
+
+.PHONY: clean #Elimina los ejecutables, los .asm y los .o
 clean:
-	rm -rf ej*.o generacion.o $(EJS)
+	rm -rf ej*.o generacion.o $(EJS) $(ASM) *.asm
+
+.PHONY: cleano #Solo elimina los .o
+cleano:
+	rm -rf ej*.o
