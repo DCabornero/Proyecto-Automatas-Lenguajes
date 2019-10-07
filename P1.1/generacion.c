@@ -374,3 +374,47 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
   fprintf(fpasm, "call print_endofline\n");
   fprintf(fpasm, "add esp, 4\n");
 }
+
+void ifthenelse_inicio(FILE* fpasm, int exp_es_variable, int etiqueta){
+  fprintf(fpasm, "pop dword eax\n");
+  if(exp_es_variable == VARIABLE){
+    fprintf(fpasm, "mov eax, [eax]\n");
+  }
+  fprintf(fpasm, "cmp eax, 0\n");
+  fprintf(fpasm, "je near fin_then_%d\n", etiqueta);
+}
+
+void ifthen_inicio(FILE* fpasm, int exp_es_variable, int etiqueta){
+  ifthenelse_inicio(fpasm, exp_es_variable, etiqueta);
+}
+
+void ifthen_fin(FILE* fpasm, int etiqueta){
+  fprintf(fpasm, "fin_then_%d:\n", etiqueta);
+}
+
+void ifthenelse_fin_then(FILE* fpasm, int etiqueta){
+  fprintf(fpasm, "jmp near fin_ifelse_%d\n", etiqueta);
+  fprintf(fpasm, "fin_then_%d:\n", etiqueta);
+}
+
+void ifthenelse_fin(FILE* fpasm, int etiqueta){
+  fprintf(fpasm, "fin_ifelse_%d:\n", etiqueta);
+}
+
+void while_inicio(FILE* fpasm, int etiqueta){
+  fprintf(fpasm, "inicio_while_%d:\n", etiqueta);
+}
+
+void while_exp_pila(FILE* fpasm, int exp_es_variable, int etiqueta){
+  fprintf(fpasm, "pop eax\n");
+  if(exp_es_variable > 0){
+    fprintf(fpasm, "mov eax, [eax]\n");
+  }
+  fprintf(fpasm, "cmp eax, 0\n");
+  fprintf(fpasm, "je near fin_while_%d\n", etiqueta);
+}
+
+void while_fin(FILE* fpasm, int etiqueta){
+  fprintf(fpasm, "jmp near inicio_while_%d\n", etiqueta);
+  fprintf(fpasm, "fin_while_%d:\n", etiqueta);
+}

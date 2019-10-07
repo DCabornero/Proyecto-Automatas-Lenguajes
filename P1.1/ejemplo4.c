@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include "generacion.h"
 
-int main (int argc, char** argv)
-{
+int main (int argc, char** argv){
 	FILE * salida;
 	int etiqueta = 0;
 
