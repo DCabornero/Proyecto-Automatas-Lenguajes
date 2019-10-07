@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -Wall -g -pedantic
-EJS = ejemplo1 ejemplo3 ejemplo4 ejemplo2 ejemplo6
-ASM = ej1 ej2 ej3 ej4 ej6
+EJS = ejemplo1 ejemplo3 ejemplo4 ejemplo2 ejemplo6 ejemplo5
+ASM = ej1 ej2 ej3 ej4 ej6 ej5
 NASM = nasm -g -o
 NFLAGS= -f elf32
 
@@ -34,6 +34,12 @@ ejemplo4: ejemplo4.o generacion.o
 
 ejemplo4.o: ejemplo4.c generacion.h
 	$(CC) $(CFLAGS) -c ejemplo4.c
+
+ejemplo5: ejemplo5.o generacion.o
+	$(CC) $(CFLAGS) -o ejemplo5 ejemplo5.o generacion.o
+
+ejemplo5.o: ejemplo5.c generacion.h
+	$(CC) $(CFLAGS) -c ejemplo5.c
 
 ejemplo6: ejemplo6.o generacion.o
 	$(CC) $(CFLAGS) -o ejemplo6 ejemplo6.o generacion.o
@@ -79,6 +85,15 @@ ej4.o: ej4.asm
 
 ej4: ej4.o alfalib.o
 	$(CC) -m32 -o ej4 ej4.o alfalib.o
+
+ej5.asm: ejemplo5
+	./ejemplo5 ej5.asm
+
+ej5.o: ej5.asm
+	$(NASM) ej5.o $(NFLAGS) ej5.asm
+
+ej5: ej5.o alfalib.o
+	$(CC) -m32 -o ej5 ej5.o alfalib.o
 
 ej6.asm: ejemplo6
 	./ejemplo6 ej6.asm

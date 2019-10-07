@@ -10,6 +10,7 @@ void escribir_cabecera_bss(FILE* fpasm){
 void escribir_subseccion_data(FILE* fpasm){
   fprintf(fpasm, "segment .data\n");
   fprintf(fpasm, "mensaje_0 db \"Error: División por 0\", 0\n");
+  fprintf(fpasm, "mensaje_1 db \"Error: Índice fuera de rango\", 0\n");
 }
 
 void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano){
@@ -39,6 +40,13 @@ void escribir_fin(FILE* fpasm){
   fprintf(fpasm, "jmp fin\n");
   fprintf(fpasm, "div0: push dword mensaje_0\n");
   fprintf(fpasm, "    call print_string\n");
+  fprintf(fpasm, "    call print_endofline\n");
+  fprintf(fpasm, "    add esp, 4\n");
+  fprintf(fpasm, "    mov dword esp, [__esp]\n");
+  fprintf(fpasm, "    jmp near fin\n");
+  fprintf(fpasm, "fin_indice_fuera_rango: push dword mensaje_1\n");
+  fprintf(fpasm, "    call print_string\n");
+  fprintf(fpasm, "    call print_endofline\n");
   fprintf(fpasm, "    add esp, 4\n");
   fprintf(fpasm, "    mov dword esp, [__esp]\n");
   fprintf(fpasm, "    jmp near fin\n");
@@ -417,4 +425,18 @@ void while_exp_pila(FILE* fpasm, int exp_es_variable, int etiqueta){
 void while_fin(FILE* fpasm, int etiqueta){
   fprintf(fpasm, "jmp near inicio_while_%d\n", etiqueta);
   fprintf(fpasm, "fin_while_%d:\n", etiqueta);
+}
+
+void escribir_elemento_vector(FILE* fpasm, char* nombre_vector, int tam_max, int exp_es_direccion){
+  fprintf(fpasm, "pop eax\n");
+  if(exp_es_direccion == VARIABLE){
+    fprintf(fpasm, "mov eax, [eax]\n");
+  }
+  fprintf(fpasm, "cmp eax, 0\n");
+  fprintf(fpasm, "jl near fin_indice_fuera_rango\n");
+  fprintf(fpasm, "cmp eax, %d\n", tam_max-1);
+  fprintf(fpasm, "jg near fin_indice_fuera_rango\n");
+  fprintf(fpasm, "mov dword edx, _%s\n", nombre_vector);
+  fprintf(fpasm, "lea eax, [edx + eax*4]\n");
+  fprintf(fpasm, "push dword eax\n");
 }
