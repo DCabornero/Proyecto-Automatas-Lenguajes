@@ -149,7 +149,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
   fprintf(fpasm, "je div0\n");
   fprintf(fpasm, "cdq\n");
   fprintf(fpasm, "idiv ecx\n");
-  fprintf(fpasm, "push dword eax\n");
+  fprintf(fpasm, "push dword eax\n");Error: Índice fuera de rang
 }
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2){
@@ -438,5 +438,50 @@ void escribir_elemento_vector(FILE* fpasm, char* nombre_vector, int tam_max, int
   fprintf(fpasm, "jg near fin_indice_fuera_rango\n");
   fprintf(fpasm, "mov dword edx, _%s\n", nombre_vector);
   fprintf(fpasm, "lea eax, [edx + eax*4]\n");
+  fprintf(fpasm, "push dword eax\n");
+}
+
+void declararFuncion(FILE* fpasm, char* nombre_funcion, int num_var_loc){
+  fprintf(fpasm, "_%s:\n", nombre_funcion);
+  fprintf(fpasm, "push dword ebp\n");
+  fprintf(fpasm, "mov ebp, esp\n");
+  fprintf(fpasm, "sub esp, %d*4\n", num_var_loc);
+}
+
+void retornarFuncion(FILE* fpasm, int es_variable){
+  fprintf(fpasm, "pop eax\n");
+  if(es_variable == VARIABLE){
+    fprintf(fpasm, "mov dword eax, [eax]\n");
+  }
+  fprintf(fpasm, "mov esp, ebp\n");
+  fprintf(fpasm, "pop ebp\n");
+  fprintf(fpasm, "ret\n");
+}
+
+void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros){
+  int d_ebp;
+  d_ebp = 4*(1+(num_total_parametros-pos_parametro));
+  fprintf(fpasm, "lea eax, [ebp + %d]\n", d_ebp);
+  fprintf(fpasm, "push dword eax\n");
+}
+
+void escribirVariableLocal(FILE* fpasm, int posicion_variable_local){
+  int d_ebp;
+  d_ebp = 4*posicion_variable_local;
+  fprintf(fpasm, "lea eax, [ebp - %d]\n", d_ebp);
+  fprintf(fpasm, "push dword eax\n");
+}
+
+void operandoEnPilaAArgumento(FILE* fpasm, int es_variable){
+  if(es_variable == VARIABLE){
+    fprintf(fpasm, "pop dword eax\n");
+    fprintf(fpasm, "mov eax, [eax]\n");
+    fprintf(fpasm, "push dword eax\n");
+  }
+}
+
+void llamarFuncion(FILE* fpasm, char* nombre_funcion, int num_argumentos){
+  fprintf(fpasm, "call %s\n", nombre_funcion);
+  fprintf(fpasm, "add esp, %d*4\n", num_argumentos);
   fprintf(fpasm, "push dword eax\n");
 }
