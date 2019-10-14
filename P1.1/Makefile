@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -Wall -g -pedantic
-EJS = ejemplo1 ejemplo3 ejemplo4 ejemplo2 ejemplo6 ejemplo5
-ASM = ej1 ej2 ej3 ej4 ej6 ej5
+EJS = ejemplo1 ejemplo3 ejemplo4 ejemplo2 ejemplo6 ejemplo5 ejemplo7
+ASM = ej1 ej2 ej3 ej4 ej6 ej5 ej7
 NASM = nasm -g -o
 NFLAGS= -f elf32
 
@@ -46,6 +46,12 @@ ejemplo6: ejemplo6.o generacion.o
 
 ejemplo6.o: ejemplo6.c generacion.h
 	$(CC) $(CFLAGS) -c ejemplo6.c
+
+ejemplo7: ejemplo7.o generacion.o
+	$(CC) $(CFLAGS) -o ejemplo7 ejemplo7.o generacion.o
+
+ejemplo7.o: ejemplo7.c generacion.h
+	$(CC) $(CFLAGS) -c ejemplo7.c
 
 .PHONY: nasm #Ejecuta los programas en C y crea los ejecutables en ensamblador
 nasm: $(ASM)
@@ -103,6 +109,15 @@ ej6.o: ej6.asm
 
 ej6: ej6.o alfalib.o
 	$(CC) -m32 -o ej6 ej6.o alfalib.o
+
+ej7.asm: ejemplo7
+	./ejemplo7 ej7.asm
+
+ej7.o: ej7.asm
+	$(NASM) ej7.o $(NFLAGS) ej7.asm
+
+ej7: ej7.o alfalib.o
+	$(CC) -m32 -o ej7 ej7.o alfalib.o
 
 .PHONY: clean #Elimina los ejecutables, los .asm y los .o
 clean:

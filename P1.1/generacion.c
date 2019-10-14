@@ -149,7 +149,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2){
   fprintf(fpasm, "je div0\n");
   fprintf(fpasm, "cdq\n");
   fprintf(fpasm, "idiv ecx\n");
-  fprintf(fpasm, "push dword eax\n");Error: Índice fuera de rang
+  fprintf(fpasm, "push dword eax\n");
 }
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2){
@@ -472,6 +472,10 @@ void escribirVariableLocal(FILE* fpasm, int posicion_variable_local){
   fprintf(fpasm, "push dword eax\n");
 }
 
+void asignarDestinoEnPila(FILE* fpasm, int es_variable){
+  //TODO
+}
+
 void operandoEnPilaAArgumento(FILE* fpasm, int es_variable){
   if(es_variable == VARIABLE){
     fprintf(fpasm, "pop dword eax\n");
@@ -484,4 +488,8 @@ void llamarFuncion(FILE* fpasm, char* nombre_funcion, int num_argumentos){
   fprintf(fpasm, "call %s\n", nombre_funcion);
   fprintf(fpasm, "add esp, %d*4\n", num_argumentos);
   fprintf(fpasm, "push dword eax\n");
+}
+
+void limpiarPila(FILE* fpasm, int num_argumentos){
+  fprintf(fpasm, "add esp, %d", 4*num_argumentos);
 }
