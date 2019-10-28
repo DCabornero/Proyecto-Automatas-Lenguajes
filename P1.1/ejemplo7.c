@@ -1,9 +1,5 @@
 #include "generacion.h"
 int main (int argc, char ** argv){
-  int etiqueta = 0;
-  int getiqueta = 0;
-  int etiquetas[MAX_ETIQUETAS];
-  int cima_etiquetas=-1;
   FILE * fd_asm;
 
   fd_asm = fopen(argv[1],"w");

@@ -1,8 +1,7 @@
-#include <stdio.h>
+#include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "generacion.h"
-
 int main (int argc, char ** argv){
   if (argc != 2) {
     fprintf (stdout, "ERROR POCOS ARGUMENTOS\n");
@@ -48,8 +47,7 @@ int main (int argc, char ** argv){
   multiplicar(fd_asm,1,0);
   escribir_operando(fd_asm,"m",1);
   escribir_elemento_vector(fd_asm,"v", 4, 1);
-  asignar(fd_asm,"v",0);
-
+  asignarDestinoEnPila(fd_asm,0);
   //m = m + 1
   escribir_operando(fd_asm,"m",1);
   escribir_operando(fd_asm,"1",0);
