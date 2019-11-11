@@ -1,60 +1,59 @@
 %{
 #include <stdio.h>
 #include "tokens.h"
+long ncol = 1;
+long nlin = 1;
 %}
 
 %option noyywrap
 
 %%
-main {printf("TOK_MAIN %d main \n", TOK_MAIN);}
-int {printf("TOK_INT %d int \n", TOK_INT);}
-boolean {printf("TOK_BOOLEAN %d boolean \n", TOK_BOOLEAN);}
-array {printf("TOK_ARRAY %d array \n", TOK_ARRAY);}
-function {printf("TOK_FUNCTION %d function \n", TOK_FUNCTION);}
-if {printf("TOK_IF %d if \n", TOK_IF);}
-else {printf("TOK_ELSE %d else \n", TOK_ELSE);}
-while {printf("TOK_WHILE %d while \n", TOK_WHILE);}
-scanf {printf("TOK_SCANF %d scanf \n", TOK_SCANF);}
-printf {printf("TOK_PRINTF %d printf \n", TOK_PRINTF);}
-return {printf("TOK_RETURN %d return \n", TOK_RETURN);}
+main {ncol += yyleng; return TOK_MAIN;}
+int {ncol += yyleng; return TOK_INT;}
+boolean {ncol += yyleng; return TOK_BOOLEAN;}
+array {ncol += yyleng; return TOK_ARRAY;}
+function {ncol += yyleng; return TOK_FUNCTION;}
+if {ncol += yyleng; return TOK_IF;}
+else {ncol += yyleng; return TOK_ELSE;}
+while {ncol += yyleng; return TOK_WHILE;}
+scanf {ncol += yyleng; return TOK_SCANF;}
+printf {ncol += yyleng; return TOK_PRINTF;}
+return {ncol += yyleng; return TOK_RETURN;}
 
-; {printf("TOK_PUNTOYCOMA %d ; \n", TOK_PUNTOYCOMA);}
-"," {printf("TOK_COMA %d , \n", TOK_COMA);}
-"(" {printf("TOK_PARENTESISIZQUIERDO %d ( \n", TOK_PARENTESISIZQUIERDO);}
-")" {printf("TOK_PARENTESISDERECHO %d ) \n", TOK_PARENTESISDERECHO);}
-"[" {printf("TOK_CORCHETEIZQUIERDO %d [ \n", TOK_CORCHETEIZQUIERDO);}
-"]" {printf("TOK_CORCHETEDERECHO %d ] \n", TOK_CORCHETEDERECHO);}
-"{" {printf("TOK_LLAVEIZQUIERDA %d { \n", TOK_LLAVEIZQUIERDA);}
-"}" {printf("TOK_LLAVEDERECHA %d } \n", TOK_LLAVEDERECHA);}
-"=" {printf("TOK_ASIGNACION %d = \n", TOK_ASIGNACION);}
-"+" {printf("TOK_MAS %d + \n", TOK_MAS);}
-"-" {printf("TOK_MENOS %d - \n", TOK_MENOS);}
-"/" {printf("TOK_DIVISION %d / \n", TOK_DIVISION);}
-"*" {printf("TOK_ASTERISCO %d * \n", TOK_ASTERISCO);}
-"&&" {printf("TOK_AND %d && \n", TOK_AND);}
-"||" {printf("TOK_OR %d || \n", TOK_OR);}
-! {printf("TOK_NOT %d ! \n", TOK_NOT);}
-"==" {printf("TOK_IGUAL %d == \n", TOK_IGUAL);}
-"!=" {printf("TOK_DISTINTO %d != \n", TOK_DISTINTO);}
-"<=" {printf("TOK_MENORIGUAL %d <= \n", TOK_MENORIGUAL);}
-">=" {printf("TOK_MAYORIGUAL %d >= \n", TOK_MAYORIGUAL);}
-"<" {printf("TOK_MENOR %d < \n", TOK_MENOR);}
-">" {printf("TOK_MAYOR %d > \n", TOK_MAYOR);}
+; {ncol += yyleng; return TOK_PUNTOYCOMA;}
+"," {ncol += yyleng; return TOK_COMA;}
+"(" {ncol += yyleng; return TOK_PARENTESISIZQUIERDO;}
+")" {ncol += yyleng; return TOK_PARENTESISDERECHO;}
+"[" {ncol += yyleng; return TOK_CORCHETEIZQUIERDO;}
+"]" {ncol += yyleng; return TOK_CORCHETEDERECHO;}
+"{" {ncol += yyleng; return TOK_LLAVEIZQUIERDA;}
+"}" {ncol += yyleng; return TOK_LLAVEDERECHA;}
+"=" {ncol += yyleng; return TOK_ASIGNACION;}
+"+" {ncol += yyleng; return TOK_MAS;}
+"-" {ncol += yyleng; return TOK_MENOS;}
+"/" {ncol += yyleng; return TOK_DIVISION;}
+"*" {ncol += yyleng; return TOK_ASTERISCO;}
+"&&" {ncol += yyleng; return TOK_AND;}
+"||" {ncol += yyleng; return TOK_OR;}
+! {ncol += yyleng; return TOK_NOT;}
+"==" {ncol += yyleng; return TOK_IGUAL;}
+"!=" {ncol += yyleng; return TOK_DISTINTO;}
+"<=" {ncol += yyleng; return TOK_MENORIGUAL;}
+">=" {ncol += yyleng; return TOK_MAYORIGUAL;}
+"<" {ncol += yyleng; return TOK_MENOR;}
+">" {ncol += yyleng; return TOK_MAYOR;}
 
-true {printf("TOK_TRUE %d true \n", TOK_TRUE);}
-false {printf("TOK_FALSE %d false \n", TOK_FALSE);}
+true {ncol += yyleng; return TOK_TRUE;}
+false {ncol += yyleng; return TOK_FALSE;}
 
-[a-zA-Z]([a-zA-Z0-9]){0,99} {printf("TOK_IDENTIFICADOR %d %s \n", TOK_IDENTIFICADOR, yytext);}
-[0-9][0-9]* {printf("TOK_CONSTANTE_ENTERA %d %s \n", TOK_CONSTANTE_ENTERA, yytext);}
+[a-zA-Z]([a-zA-Z0-9]){0,99} {ncol += yyleng; return TOK_IDENTIFICADOR;}
+[0-9][0-9]* {ncol += yyleng; return TOK_CONSTANTE_ENTERA;}
 
-[ \n\t]+ {printf("");}
-"//"(.)*[\n] {printf("");}
+[ \t]+ {ncol += yyleng;}
+[\n] {nlin++; ncol = 1;}
+"//"(.)*[\n] {nlin++; ncol = 1;}
 
-[a-zA-Z]([a-zA-Z0-9])* {printf("TOK_IDENTIFICADORERROR %d %s \n", TOK_IDENTIFICADORERROR, yytext);}
-. {printf("TOK_ERROR %d %s \n", TOK_ERROR, yytext);}
+[a-zA-Z]([a-zA-Z0-9])* {ncol += yyleng; return TOK_IDENTIFICADORERROR;}
+. {ncol += yyleng; return TOK_ERROR;}
 
 %%
-
-int main(){
-  return yylex();
-}
