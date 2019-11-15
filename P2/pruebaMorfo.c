@@ -6,19 +6,19 @@ int yylex();
 int main(int argc, char** argv){
   extern FILE* yyin;
   extern char* yytext;
-  extern int yyleng;
   extern long nlin, ncol;
   int tok;
   FILE* fout;
 
   if(argc != 3){
     printf("Usage is pruebaMorfo fichEntrada fichSalida\n");
+    return 0;
   }
 
   yyin = fopen(argv[1], "r");
   fout = fopen(argv[2], "w");
 
-  while(tok = yylex()){
+  while((tok = yylex())){
     switch(tok){
       case TOK_MAIN:
         fprintf(fout, "TOK_MAIN\t%d main\n", TOK_MAIN);
