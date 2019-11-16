@@ -53,7 +53,7 @@ false {ncol += yyleng; return TOK_FALSE;}
 [\n] {nlin++; ncol = 1;}
 "//"(.)*[\n] {nlin++; ncol = 1;}
 
-[a-zA-Z]([a-zA-Z0-9])* {ncol += yyleng; return TOK_IDENTIFICADORERROR;}
-. {ncol += yyleng; return TOK_ERROR;}
+[a-zA-Z]([a-zA-Z0-9])* {return TOK_IDENTIFICADORERROR;}
+. {return TOK_ERROR;}
 
 %%

@@ -17,6 +17,6 @@ pruebaMorfo.o: pruebaMorfo.c tokens.h
 pruebaMorfo: lex.yy.o pruebaMorfo.o
 	$(CC) $(CFLAGS) -o pruebaMorfo lex.yy.o pruebaMorfo.o
 
-.PHONY: clean #Elimina los ejecutables, los .asm y los .o
+.PHONY: clean #Elimina los ejecutables, los txt de misalida, los .o y lex.yy.c
 clean:
-	rm -rf *.o lex.yy.c $(EJS)
+	rm -rf *.o lex.yy.c $(EJS) misalida*.txt
