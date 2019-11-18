@@ -1,0 +1,8 @@
+uno
+dos
+-1 uno
+-1 dos
+ -1
+ -1
+ro
+ -1
