@@ -4,9 +4,10 @@
 extern long ncol;
 extern long nlin;
 extern int is_morpho;
+extern int yyleng;
 int yylex();
 void yyerror(const char *s);
-FILE* out;
+extern FILE* out;
 %}
 
 /* Palabras reservadas */
@@ -135,6 +136,6 @@ identificador: TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_
 
 void yyerror(const char * s) {
     if(!is_morpho) {
-        printf("****Error sintactico en [lin %ld, col %ld]\n", nlin, ncol);
+        printf("****Error sintactico en [lin %ld, col %ld]\n", nlin, ncol-yyleng);
     }
 }
