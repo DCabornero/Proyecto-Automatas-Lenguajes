@@ -52,7 +52,7 @@ hashtable_t *ht_create( int size ) {
 /* Hash a string for a particular hash table. */
 int ht_hash( hashtable_t *hashtable, char *key ) {
 
-	unsigned long int hashval;
+	unsigned long int hashval = 0;
 	int i = 0;
 
 	/* Convert our string to an integer */
@@ -149,17 +149,39 @@ int ht_get( hashtable_t *hashtable, char *key ) {
 
 }
 
+void ht_destroy(hashtable_t *hashtable){
+	int i;
+	entry_t *curr, *next;
+	if(!hashtable){
+		return;
+	}
+	for(i=0;i<hashtable->size;i++){
+		curr = hashtable->table[i];
+		if(!curr){
+			continue;
+		}
+		while(curr->next){
+			next = curr->next;
+			free(curr->key);
+			free(curr);
+			curr = next;
+		}
+		free(curr->key);
+		free(curr);
+	}
+	free(hashtable->table);
+	free(hashtable);
+	return;
+}
 
 int main( int argc, char **argv ) {
 
   char* key;
   char* val;
-  int i, flag, value;
+  int i, flag, value, intval;
   char buf[MAX_LINE];
   FILE* fin = NULL;
   FILE* fout = NULL;
-
-	hashtable_t *hashtable = ht_create(65536);
 
   if(argc != 3){
     printf("Usage is ./prueba_tabla fichero_entrada fichero_salida\n");
@@ -177,36 +199,88 @@ int main( int argc, char **argv ) {
     fclose(fin);
     return 0;
   }
+	hashtable_t *target_table = NULL;
+	hashtable_t *hashtable_g = ht_create(65536);
+	hashtable_t *hashtable_l = NULL;
 
   while(fgets(buf, MAX_LINE, fin) != NULL){
     flag = 0;
-    for(i=0; i<strlen(buf)+1; i++){
-      if(buf[i] == ' '){
+    for(i=0; i<strlen(buf)-1; i++){
+      if(buf[i] == '\t'){
         buf[i] = 0;
         flag = 1;
         break;
       }
     }
     key = buf;
+		// Descartamos el \n
+		if(!flag){
+			key[strlen(key)-1] = 0;
+		}
+		// Inserción o función
     if(flag){
       val = buf+i+1;
-      value = ht_get(hashtable, key);
-      if(value == (int)NAN){
-        ht_set(hashtable, key, atoi(val));
-        fprintf(fout, "%s\n", key);
-      }
-      else{
-        fprintf(fout, "-1 %s\n", key);
-      }
-    }
+			intval = atoi(val);
+			// Inserción
+			if(intval >= 0){
+				// Intentamos insertar en la local si hay
+				if(hashtable_l){
+					target_table = hashtable_l;
+				}
+				// Si no intentaremos insertar en la global
+				else{
+					target_table = hashtable_g;
+				}
+      	value = ht_get(target_table, key);
+      	if(value == (int)NAN){
+        	ht_set(target_table, key, intval);
+        	fprintf(fout, "%s\n", key);
+      	}
+				// Si no, no se ha podido insertar
+      	else{
+        fprintf(fout, "-1\t%s\n", key);
+      	}
+    	}
+			// Función
+			else{
+				// Cierre
+				if(!strcmp(key, "cierre") && intval == -999){
+					ht_destroy(hashtable_l);
+					hashtable_l = NULL;
+					fprintf(fout, "cierre\n");
+				}
+				else{
+					// Suponemos que no se va a abrir otro ámbito sin cerrar el anterior
+					hashtable_l = ht_create(65536);
+					ht_set(hashtable_g, key, intval);
+					ht_set(hashtable_l, key, intval);
+					fprintf(fout, "%s\n", key);
+				}
+			}
+		}
+		// Búsqueda
     if(!flag){
-      value = ht_get(hashtable, key);
+			// Primero intentamos buscar en la local
+			if(hashtable_l){
+				value = ht_get(hashtable_l, key);
+				// Encontrado en la local
+				if(value != (int)NAN){
+					fprintf(fout, "%s\t%d\n", key, value);
+					continue;
+				}
+			}
+			// Si no hay local o no se ha encontrado, buscamos en la global
+      value = ht_get(hashtable_g, key);
       if(value == (int)NAN){
         value = -1;
       }
-      fprintf(fout, "%s %d\n", val, value);
+      fprintf(fout, "%s\t%d\n", key, value);
     }
   }
+	if(hashtable_l){
+		ht_destroy(hashtable_l);
+	}
+	ht_destroy(hashtable_g);
   fclose(fin);
   fclose(fout);
 
