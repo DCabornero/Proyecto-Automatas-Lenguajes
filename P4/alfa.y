@@ -43,6 +43,15 @@ long nlin = 1;
 %token TOK_IDENTIFICADOR
 %token TOK_TRUE
 %token TOK_FALSE
+%right TOK_ASIGNACION
+%left TOK_OR
+%left TOK_AND
+%left TOK_IGUAL TOK_DISTINTO
+%left TOK_MENOR TOK_MENORIGUAL TOK_MAYOR TOK_MAYORIGUAL
+%left TOK_MAS TOK_MENOS
+%left TOK_DIVISION TOK_ASTERISCO
+%right TOK_NOT
+%left TOK_PARENTESISIZQUIERDO TOK_PARENTESISDERECHO
 %%
 
 programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLAVEDERECHA {fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");};

@@ -1,13 +1,3 @@
-State 75 conflicts: 6 shift/reduce
-State 76 conflicts: 6 shift/reduce
-State 100 conflicts: 6 shift/reduce
-State 101 conflicts: 6 shift/reduce
-State 102 conflicts: 6 shift/reduce
-State 103 conflicts: 6 shift/reduce
-State 104 conflicts: 6 shift/reduce
-State 105 conflicts: 6 shift/reduce
-
-
 Grammar
 
     0 $accept: programa $end
@@ -1085,20 +1075,10 @@ State 75
    47    | exp . TOK_AND exp
    48    | exp . TOK_OR exp
 
-    TOK_MAS        shift, and go to state 77
-    TOK_MENOS      shift, and go to state 78
     TOK_DIVISION   shift, and go to state 79
     TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
 
-    TOK_MAS        [reduce using rule 46 (exp)]
-    TOK_MENOS      [reduce using rule 46 (exp)]
-    TOK_DIVISION   [reduce using rule 46 (exp)]
-    TOK_ASTERISCO  [reduce using rule 46 (exp)]
-    TOK_AND        [reduce using rule 46 (exp)]
-    TOK_OR         [reduce using rule 46 (exp)]
-    $default       reduce using rule 46 (exp)
+    $default  reduce using rule 46 (exp)
 
 
 State 76
@@ -1111,20 +1091,7 @@ State 76
    48    | exp . TOK_OR exp
    49    | TOK_NOT exp .
 
-    TOK_MAS        shift, and go to state 77
-    TOK_MENOS      shift, and go to state 78
-    TOK_DIVISION   shift, and go to state 79
-    TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
-
-    TOK_MAS        [reduce using rule 49 (exp)]
-    TOK_MENOS      [reduce using rule 49 (exp)]
-    TOK_DIVISION   [reduce using rule 49 (exp)]
-    TOK_ASTERISCO  [reduce using rule 49 (exp)]
-    TOK_AND        [reduce using rule 49 (exp)]
-    TOK_OR         [reduce using rule 49 (exp)]
-    $default       reduce using rule 49 (exp)
+    $default  reduce using rule 49 (exp)
 
 
 State 77
@@ -1515,20 +1482,10 @@ State 100
    47    | exp . TOK_AND exp
    48    | exp . TOK_OR exp
 
-    TOK_MAS        shift, and go to state 77
-    TOK_MENOS      shift, and go to state 78
     TOK_DIVISION   shift, and go to state 79
     TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
 
-    TOK_MAS        [reduce using rule 42 (exp)]
-    TOK_MENOS      [reduce using rule 42 (exp)]
-    TOK_DIVISION   [reduce using rule 42 (exp)]
-    TOK_ASTERISCO  [reduce using rule 42 (exp)]
-    TOK_AND        [reduce using rule 42 (exp)]
-    TOK_OR         [reduce using rule 42 (exp)]
-    $default       reduce using rule 42 (exp)
+    $default  reduce using rule 42 (exp)
 
 
 State 101
@@ -1541,20 +1498,10 @@ State 101
    47    | exp . TOK_AND exp
    48    | exp . TOK_OR exp
 
-    TOK_MAS        shift, and go to state 77
-    TOK_MENOS      shift, and go to state 78
     TOK_DIVISION   shift, and go to state 79
     TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
 
-    TOK_MAS        [reduce using rule 43 (exp)]
-    TOK_MENOS      [reduce using rule 43 (exp)]
-    TOK_DIVISION   [reduce using rule 43 (exp)]
-    TOK_ASTERISCO  [reduce using rule 43 (exp)]
-    TOK_AND        [reduce using rule 43 (exp)]
-    TOK_OR         [reduce using rule 43 (exp)]
-    $default       reduce using rule 43 (exp)
+    $default  reduce using rule 43 (exp)
 
 
 State 102
@@ -1567,20 +1514,7 @@ State 102
    47    | exp . TOK_AND exp
    48    | exp . TOK_OR exp
 
-    TOK_MAS        shift, and go to state 77
-    TOK_MENOS      shift, and go to state 78
-    TOK_DIVISION   shift, and go to state 79
-    TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
-
-    TOK_MAS        [reduce using rule 44 (exp)]
-    TOK_MENOS      [reduce using rule 44 (exp)]
-    TOK_DIVISION   [reduce using rule 44 (exp)]
-    TOK_ASTERISCO  [reduce using rule 44 (exp)]
-    TOK_AND        [reduce using rule 44 (exp)]
-    TOK_OR         [reduce using rule 44 (exp)]
-    $default       reduce using rule 44 (exp)
+    $default  reduce using rule 44 (exp)
 
 
 State 103
@@ -1593,20 +1527,7 @@ State 103
    47    | exp . TOK_AND exp
    48    | exp . TOK_OR exp
 
-    TOK_MAS        shift, and go to state 77
-    TOK_MENOS      shift, and go to state 78
-    TOK_DIVISION   shift, and go to state 79
-    TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
-
-    TOK_MAS        [reduce using rule 45 (exp)]
-    TOK_MENOS      [reduce using rule 45 (exp)]
-    TOK_DIVISION   [reduce using rule 45 (exp)]
-    TOK_ASTERISCO  [reduce using rule 45 (exp)]
-    TOK_AND        [reduce using rule 45 (exp)]
-    TOK_OR         [reduce using rule 45 (exp)]
-    $default       reduce using rule 45 (exp)
+    $default  reduce using rule 45 (exp)
 
 
 State 104
@@ -1623,16 +1544,8 @@ State 104
     TOK_MENOS      shift, and go to state 78
     TOK_DIVISION   shift, and go to state 79
     TOK_ASTERISCO  shift, and go to state 80
-    TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
 
-    TOK_MAS        [reduce using rule 47 (exp)]
-    TOK_MENOS      [reduce using rule 47 (exp)]
-    TOK_DIVISION   [reduce using rule 47 (exp)]
-    TOK_ASTERISCO  [reduce using rule 47 (exp)]
-    TOK_AND        [reduce using rule 47 (exp)]
-    TOK_OR         [reduce using rule 47 (exp)]
-    $default       reduce using rule 47 (exp)
+    $default  reduce using rule 47 (exp)
 
 
 State 105
@@ -1650,15 +1563,8 @@ State 105
     TOK_DIVISION   shift, and go to state 79
     TOK_ASTERISCO  shift, and go to state 80
     TOK_AND        shift, and go to state 81
-    TOK_OR         shift, and go to state 82
 
-    TOK_MAS        [reduce using rule 48 (exp)]
-    TOK_MENOS      [reduce using rule 48 (exp)]
-    TOK_DIVISION   [reduce using rule 48 (exp)]
-    TOK_ASTERISCO  [reduce using rule 48 (exp)]
-    TOK_AND        [reduce using rule 48 (exp)]
-    TOK_OR         [reduce using rule 48 (exp)]
-    $default       reduce using rule 48 (exp)
+    $default  reduce using rule 48 (exp)
 
 
 State 106
