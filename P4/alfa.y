@@ -1,8 +1,12 @@
 %{
 #include <stdio.h>
-#include "tokens.h"
-long ncol = 1;
-long nlin = 1;
+//#include "tokens.h"
+extern long ncol;
+extern long nlin;
+extern int is_morpho;
+int yylex();
+void yyerror(const char *s);
+FILE* out;
 %}
 
 /* Palabras reservadas */
@@ -43,6 +47,8 @@ long nlin = 1;
 %token TOK_IDENTIFICADOR
 %token TOK_TRUE
 %token TOK_FALSE
+%token TOK_ERROR
+%token TOK_IDENTIFICADORERROR
 %right TOK_ASIGNACION
 %left TOK_OR
 %left TOK_AND
@@ -129,6 +135,6 @@ identificador: TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_
 
 void yyerror(const char * s) {
     if(!is_morpho) {
-        printf("****Error sintactico en [lin %ld, col %ld]\n", num_lin, num_col);
+        printf("****Error sintactico en [lin %ld, col %ld]\n", nlin, ncol);
     }
 }

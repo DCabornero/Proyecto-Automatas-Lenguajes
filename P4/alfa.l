@@ -1,8 +1,10 @@
 %{
 #include <stdio.h>
-#include "tokens.h"
+#include "y.tab.h"
 long ncol = 1;
 long nlin = 1;
+FILE* out;
+int is_morpho = 0;
 %}
 
 %option noyywrap
@@ -53,7 +55,7 @@ false {ncol += yyleng; return TOK_FALSE;}
 [\n] {nlin++; ncol = 1;}
 "//"(.)*[\n] {nlin++; ncol = 1;}
 
-[a-zA-Z]([a-zA-Z0-9])* {return TOK_IDENTIFICADORERROR;}
-. {return TOK_ERROR;}
+[a-zA-Z]([a-zA-Z0-9])* {printf("****Error en [lin %ld, col %ld]: identificador demasiado largo (%s)\n", nlin, ncol, yytext); is_morpho = 1; return TOK_IDENTIFICADORERROR;}
+. {printf("****Error en [lin %ld, col %ld]: simbolo no permitido (%s)\n", nlin, ncol, yytext); is_morpho = 1; return TOK_ERROR;}
 
 %%
