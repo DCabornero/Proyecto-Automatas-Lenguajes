@@ -8,6 +8,7 @@ int main( int argc, char **argv ) {
   char buf[MAX_LINE];
   FILE* fin = NULL;
   FILE* fout = NULL;
+  SIMBOLO* aux;
 
   if(argc != 3){
     printf("Usage is ./prueba_tabla fichero_entrada fichero_salida\n");
@@ -57,9 +58,9 @@ int main( int argc, char **argv ) {
 				else{
 					target_table = hashtable_g;
 				}
-      	value = ht_get(target_table, key);
-      	if(value == (int)NAN){
-        	ht_set(target_table, key, intval);
+      	aux = ht_get(target_table, key);
+      	if(!aux){
+        	ht_set(target_table, key, VARIABLE, ENTERO, ESCALAR, intval, 0, 0, 0, 0);
         	fprintf(fout, "%s\n", key);
       	}
 				// Si no, no se ha podido insertar
@@ -76,17 +77,15 @@ int main( int argc, char **argv ) {
 					fprintf(fout, "cierre\n");
 				}
 				else{
-					// Suponemos que no se va a abrir otro ámbito sin cerrar el anterior
-          // Parece ser que no se puede suponer lo jodidamente evidente, pero bueno
           if(hashtable_l){
             fprintf(fout, "-1\t%s\n", key);
           }
           else{
 					    hashtable_l = ht_create(65536);
-				    	ht_set(hashtable_g, key, intval);
-				    	ht_set(hashtable_l, key, intval);
+				    	ht_set(hashtable_g, key, FUNCION, -1, -1, intval, 0, 0, 0, 0);
+				    	ht_set(hashtable_l, key, FUNCION, -1, -1, intval, 0, 0, 0, 0);
 				    	fprintf(fout, "%s\n", key);
-        }
+          }
 				}
 			}
 		}
@@ -94,17 +93,20 @@ int main( int argc, char **argv ) {
     if(!flag){
 			// Primero intentamos buscar en la local
 			if(hashtable_l){
-				value = ht_get(hashtable_l, key);
+				aux = ht_get(hashtable_l, key);
 				// Encontrado en la local
-				if(value != (int)NAN){
-					fprintf(fout, "%s\t%d\n", key, value);
+				if(aux){
+					fprintf(fout, "%s\t%d\n", key, aux->valor);
 					continue;
 				}
 			}
 			// Si no hay local o no se ha encontrado, buscamos en la global
-      value = ht_get(hashtable_g, key);
-      if(value == (int)NAN){
+      aux = ht_get(hashtable_g, key);
+      if(!aux){
         value = -1;
+      }
+      else{
+        value = aux->valor;
       }
       fprintf(fout, "%s\t%d\n", key, value);
     }
