@@ -16,7 +16,7 @@ typedef enum { ENTERO, BOOLEANO } TIPO;
 /* Categoría de la variable: puede ser variable atómicas (escalar) o lista/array (vector) */
 typedef enum { ESCALAR, VECTOR } CATEGORIA;
 
-struct SIMBOLO{
+typedef struct SIMBOLO_{
 	CATEGORIA_SIMBOLO cat_simbolo;      /* categoría del simbolo */
 	TIPO tipo;                          /* tipo */
   CATEGORIA categoria;                /* categoria de la variable */
@@ -25,7 +25,7 @@ struct SIMBOLO{
   int num_parametros;                 /* número de parámetros si función */
   int posicion;                       /* posición en llamada a función si parámetro, posición de declaración si variable local de función */
   int num_var_locales;                /* número de variables locales si función */
-}
+} SIMBOLO;
 
 typedef struct entry_s entry_t;
 

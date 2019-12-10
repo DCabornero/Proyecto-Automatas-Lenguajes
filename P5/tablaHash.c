@@ -5,10 +5,9 @@
 
 struct entry_s {
 	char *key;
-	struct SIMBOLO* value;
+	struct SIMBOLO_* value;
 	struct entry_s *next;
 };
-
 
 
 struct hashtable_s {
@@ -106,11 +105,11 @@ void ht_set( hashtable_t *hashtable, char *key, CATEGORIA_SIMBOLO cat_simbolo, T
 	/* There's already a pair.  Let's replace that string. */
 	if( next != NULL && next->key != NULL && strcmp( key, next->key ) == 0 ) {
 
-		next->value = value;
+	 	return;
 
 	/* Nope, could't find it.  Time to grow a pair. */
 	} else {
-		newpair = ht_newpair( hashtable, key, cat_simbolo, tipo, categoria, valor, longitud, num_parametros, posicion, num_var_locales);
+		newpair = ht_newpair(key, cat_simbolo, tipo, categoria, valor, longitud, num_parametros, posicion, num_var_locales);
 
 		/* We're at the start of the linked list in this bin. */
 		if( next == hashtable->table[ bin ] ) {
@@ -144,7 +143,7 @@ SIMBOLO* ht_get( hashtable_t *hashtable, char *key ) {
 
 	/* Did we actually find anything? */
 	if( pair == NULL || pair->key == NULL || strcmp( key, pair->key ) != 0 ) {
-		return (int) NAN;
+		return NULL;
 
 	} else {
 		return pair->value;
@@ -170,6 +169,7 @@ void ht_destroy(hashtable_t *hashtable){
 			free(curr);
 			curr = next;
 		}
+		free(curr->value);
 		free(curr->key);
 		free(curr);
 	}
