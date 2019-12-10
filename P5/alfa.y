@@ -1,6 +1,5 @@
 %{
-#include <stdio.h>
-//#include "tokens.h"
+#include "alfa.h"
 extern long ncol;
 extern long nlin;
 extern int is_morpho;
@@ -9,6 +8,10 @@ int yylex();
 void yyerror(const char *s);
 extern FILE* out;
 %}
+
+%union{
+  tipo_atributos atributos;
+}
 
 /* Palabras reservadas */
 %token TOK_MAIN
@@ -44,8 +47,8 @@ extern FILE* out;
 %token TOK_MAYORIGUAL
 %token TOK_MENOR
 %token TOK_MAYOR
-%token TOK_CONSTANTE_ENTERA
-%token TOK_IDENTIFICADOR
+%token <atributos> TOK_CONSTANTE_ENTERA
+%token <atributos> TOK_IDENTIFICADOR
 %token TOK_TRUE
 %token TOK_FALSE
 %token TOK_ERROR
