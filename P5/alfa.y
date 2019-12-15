@@ -1,6 +1,5 @@
 %{
 #include "alfa.h"
-#include "tablaSimbolos.h"
 #define INMEDIATO 0
 #define VARIABLE 1
 extern long ncol;
