@@ -35,4 +35,4 @@ alfa: lex.yy.o y.tab.o alfa.o generacion.o tablaSimbolos.o
 
 .PHONY: clean #Elimina los ejecutables, los txt de misalida, los .o y tablaHash.c
 clean:
-	rm -rf $(EJSO) lex.yy.c lex.yy.o alfa.o y.output y.tab.h y.tab.o y.tab.c generacion.o
+	rm -rf $(EJSO) lex.yy.c lex.yy.o alfa.o y.output y.tab.h y.tab.o y.tab.c generacion.o alfa
