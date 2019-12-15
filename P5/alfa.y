@@ -1,10 +1,16 @@
 %{
 #include "alfa.h"
+#include "tablaSimbolos.h"
 extern long ncol;
 extern long nlin;
 extern int is_morpho;
 extern int yyleng;
 int yylex();
+int tipo_actual;
+int clase_actual;
+int ambito_actual = GLOBAL;
+SIMBOLO* simbolo_actual = NULL;
+SIMBOLO* simbolo_creado = NULL;
 void yyerror(const char *s);
 extern FILE* out;
 %}
@@ -53,6 +59,16 @@ extern FILE* out;
 %token TOK_FALSE
 %token TOK_ERROR
 %token TOK_IDENTIFICADORERROR
+
+%type <atributos> constante
+%type <atributos> constante_entera
+%type <atributos> constante_logica
+%type <atributos> exp
+%type <atributos> condicional
+%type <atributos> elemento_vector
+%type <atributos> identificador
+%type <atributos> comparacion
+
 %right TOK_ASIGNACION
 %left TOK_OR
 %left TOK_AND
@@ -68,11 +84,11 @@ programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones funciones sentencias TOK_LLA
 declaraciones: declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}
                | declaracion declaraciones {fprintf(out, ";R3:\t<declaraciones> ::= <declaracion> <declaraciones>\n");};
 declaracion: clase identificadores TOK_PUNTOYCOMA {fprintf(out, ";R4:\t<declaracion> ::= <clase> <identificadores> ;\n");};
-clase: clase_escalar {fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
-       | clase_vector {fprintf(out, ";R7:\t<clase> ::= <clase_vector>\n");};
+clase: clase_escalar {clase_actual=ESCALAR; fprintf(out, ";R5:\t<clase> ::= <clase_escalar>\n");}
+       | clase_vector {clase_actual=VECTOR; fprintf(out, ";R7:\t<clase> ::= <clase_vector>\n");};
 clase_escalar: tipo {fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");};
-tipo: TOK_INT {fprintf(out, ";R10:\t<tipo> ::= int\n");}
-      | TOK_BOOLEAN {fprintf(out, ";R11:\t<tipo> ::= boolean\n");};
+tipo: TOK_INT {tipo_actual=ENTERO; fprintf(out, ";R10:\t<tipo> ::= int\n");}
+      | TOK_BOOLEAN {tipo_actual=BOOLEANO; fprintf(out, ";R11:\t<tipo> ::= boolean\n");};
 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");};
 identificadores: identificador {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
                  | identificador TOK_COMA identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");};
@@ -134,7 +150,19 @@ constante: constante_logica {fprintf(out, ";R99:\t<constante> ::= <constante_log
 constante_logica: TOK_TRUE {fprintf(out, ";R102:\t<constante_logica> ::= true\n");}
                   | TOK_FALSE {fprintf(out, ";R103:\t<constante_logica> ::= false\n");};
 constante_entera: TOK_CONSTANTE_ENTERA {fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");};
-identificador: TOK_IDENTIFICADOR {fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");};
+identificador: TOK_IDENTIFICADOR {
+  simbolo_creado = (SIMBOLO*)calloc(1, sizeof(SIMBOLO));
+  simbolo_creado->cat_simbolo = VARIABLE;
+  simbolo_creado->tipo = tipo_actual;
+  simbolo_creado->categoria = clase_actual;
+  if(declarar($1.lexema, simbolo_creado) == ERROR){
+    printf("****Error semantico en lin %ld: Declaracion duplicada.");
+    free(simbolo);
+    return -1;
+  }
+  free(simbolo);
+  fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
+};
 %%
 
 void yyerror(const char * s) {

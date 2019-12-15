@@ -49,8 +49,8 @@ return {ncol += yyleng; fprintf(out, ";D:\treturn\n"); return TOK_RETURN;}
 true {ncol += yyleng; fprintf(out, ";D:\ttrue\n"); return TOK_TRUE;}
 false {ncol += yyleng; fprintf(out, ";D:\tfalse\n"); return TOK_FALSE;}
 
-[a-zA-Z]([a-zA-Z0-9]){0,99} {strcpy(yylval.atributos.lexema, yytext); yylval.atributos.es_direccion = ES_VARIABLE; ncol += yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR;}
-[0-9][0-9]* {yylval.atributos.valor_entero = atoi(yytext); yylval.atributos.tipo = TIPO_ENTERO; yylval.atributos.es_direccion = ES_INMEDIATO; ncol += yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA;}
+[a-zA-Z]([a-zA-Z0-9]){0,99} {strcpy(yylval.atributos.lexema, yytext); ncol += yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_IDENTIFICADOR;}
+[0-9][0-9]* {yylval.atributos.valor_entero = atoi(yytext); ncol += yyleng; fprintf(out, ";D:\t%s\n", yytext); return TOK_CONSTANTE_ENTERA;}
 
 [ \t]+ {ncol += yyleng;}
 [\n] {nlin++; ncol = 1;}
