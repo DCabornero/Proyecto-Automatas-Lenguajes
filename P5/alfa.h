@@ -7,8 +7,6 @@
 
 #define MAX_LONG_ID 100
 #define MAX_VECTOR 64
-#define ES_VARIABLE 1
-#define ES_INMEDIATO 0
 #define GLOBAL 0
 #define LOCAL 1
 
