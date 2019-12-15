@@ -41,7 +41,7 @@ SIMBOLO* usoLocal(char* id){
   return ht_get(tablaLocal, id);
 }
 
-STATUS declararFuncion(char* id, SIMBOLO* desc_id){
+STATUS declararFuncionTS(char* id, SIMBOLO* desc_id){
   if(ht_get(tablaGlobal, id) != NULL){
     return ERROR;
   }

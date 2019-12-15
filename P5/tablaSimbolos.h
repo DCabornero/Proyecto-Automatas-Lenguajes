@@ -10,7 +10,7 @@ typedef enum { OK, ERROR } STATUS;
 STATUS declarar(char* id, SIMBOLO* desc_id);
 SIMBOLO* usoGlobal(char* id);
 SIMBOLO* usoLocal(char* id);
-STATUS declararFuncion(char* id, SIMBOLO* desc_id);
+STATUS declararFuncionTS(char* id, SIMBOLO* desc_id);
 STATUS cerrarFuncion();
 void eliminar();
 
