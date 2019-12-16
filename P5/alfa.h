@@ -1,5 +1,5 @@
-#ifndef _ALFA_H
-#define _ALFA_H
+#ifndef ALFA_H
+#define ALFA_H
 
 #include <stdio.h>
 #include "tablaSimbolos.h"
@@ -10,12 +10,15 @@
 #define GLOBAL 0
 #define LOCAL 1
 
-typedef struct{
+typedef struct _tipo_atributos tipo_atributos;
+
+struct _tipo_atributos{
   char lexema[MAX_LONG_ID+1];
   int tipo;
   int valor_entero;
   int es_direccion;
   int etiqueta;
-}tipo_atributos;
+};
+
 
 #endif

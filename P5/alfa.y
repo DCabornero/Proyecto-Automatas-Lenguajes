@@ -98,8 +98,8 @@ clase_escalar: tipo {fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");};
 tipo: TOK_INT {tipo_actual=ENTERO; fprintf(out, ";R10:\t<tipo> ::= int\n");}
       | TOK_BOOLEAN {tipo_actual=BOOLEANO; fprintf(out, ";R11:\t<tipo> ::= boolean\n");};
 clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");};
-identificadores: TOK_IDENTIFICADOR {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
-                 | TOK_IDENTIFICADOR TOK_COMA identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");};
+identificadores: identificador {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
+                 | identificador TOK_COMA identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");};
 funciones: funcion funciones {fprintf(out, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
            | %empty {fprintf(out, ";R21:\t<funciones> ::=\n");};
 funcion: TOK_FUNCTION tipo TOK_IDENTIFICADOR TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion sentencias TOK_LLAVEDERECHA {fprintf(out, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");};
@@ -229,11 +229,13 @@ identificador: TOK_IDENTIFICADOR {
   simbolo_creado->tipo = tipo_actual;
   simbolo_creado->categoria = clase_actual;
   if(declarar($1.lexema, simbolo_creado) == ERROR){
-    printf("****Error semantico en lin %ld: Declaracion duplicada.");
-    free(simbolo);
+    printf("****Error semantico en lin %ld: Declaracion duplicada.", nlin);
+    free(simbolo_creado);
+    simbolo_creado = NULL;
     return -1;
   }
-  free(simbolo);
+  free(simbolo_creado);
+  simbolo_creado = NULL;
   fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");
 };
 %%

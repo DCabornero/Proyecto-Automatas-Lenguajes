@@ -1,10 +1,13 @@
 #include <stdio.h>
+#include "alfa.h"
 #include "y.tab.h"
 #include "generacion.h"
 #include "tablaSimbolos.h"
 
 int yylex();
 int yyparse();
+
+
 
 int main(int argc, char** argv){
   extern FILE* yyin;
