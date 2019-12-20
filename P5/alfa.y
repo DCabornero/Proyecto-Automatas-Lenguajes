@@ -10,6 +10,7 @@ int yylex();
 int tipo_actual;
 int clase_actual;
 int ambito_actual = GLOBAL;
+int etiquetas = 1;
 SIMBOLO* simbolo_actual = NULL;
 SIMBOLO* simbolo_creado = NULL;
 void yyerror(const char *s);
@@ -69,6 +70,8 @@ extern FILE* out;
 %type <atributos> elemento_vector
 %type <atributos> identificador
 %type <atributos> comparacion
+%type <atributos> if_exp
+%type <atributos> if_exp_sentencias
 
 %right TOK_ASIGNACION
 %left TOK_OR
@@ -152,16 +155,64 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
             }
             | elemento_vector TOK_ASIGNACION exp {fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");};
 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {fprintf(out, ";R48:\t<elemento_vector> ::= <identificador> [ <exp> ]\n");};
-condicional: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");}
-             | TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");};
+condicional: if_exp_sentencias {
+              ifthenelse_fin(out, $1.etiqueta);
+              fprintf(out, ";R50:\t<condicional> ::= if ( <exp> ) { <sentencias> }\n");
+            }
+             | if_exp_sentencias TOK_ELSE TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {
+              ifthenelse_fin(out, $1.etiqueta);
+              fprintf(out, ";R51:\t<condicional> ::= if ( <exp> ) { <sentencias> } else { <sentencias> }\n");
+            };
+if_exp_sentencias: if_exp sentencias TOK_LLAVEDERECHA {
+  $$.etiqueta = $1.etiqueta;
+  ifthenelse_fin_then(out, $$.etiqueta);
+}
+if_exp: TOK_IF TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA {
+  if($3.tipo != BOOLEANO){
+    printf("****Error semantico en lin %ld: Condicional con condicion de tipo int.\n", nlin);
+  }
+  $$.etiqueta = etiquetas++;
+  ifthen_inicio(out, $3.es_direccion, $$.etiqueta);
+}
 bucle: TOK_WHILE TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA sentencias TOK_LLAVEDERECHA {fprintf(out, ";R52:\t<bucle> ::= while ( <exp> ) { <sentencias> }\n");};
-lectura: TOK_SCANF TOK_IDENTIFICADOR {fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");};
+lectura: TOK_SCANF TOK_IDENTIFICADOR {
+  if(ambito_actual == GLOBAL){
+    simbolo_actual = usoGlobal($2.lexema);
+  }
+  else{
+    simbolo_actual = usoLocal($2.lexema);
+  }
+  if(simbolo_actual == NULL){
+    printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $2.lexema);
+  }
+  if(simbolo_actual->cat_simbolo == FUNCION){
+    printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
+    return -1;
+  }
+  if(simbolo_actual->categoria == VECTOR){
+    printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
+    return -1;
+  }
+  leer(out, $2.lexema, simbolo_actual->tipo);
+  fprintf(out, ";R54:\t<lectura> ::= scanf <identificador>\n");
+};
 escritura: TOK_PRINTF exp {
   escribir(out, $2.es_direccion, $2.tipo);
   fprintf(out, ";R56:\t<escritura> ::= printf <exp>\n");
 };
 retorno_funcion: TOK_RETURN exp {fprintf(out, ";R61:\t<retorno_funcion> ::= return <exp>\n");};
-exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
+exp: exp TOK_MAS exp {
+  if($1.tipo == BOOLEANO || $3.tipo == BOOLEANO){
+    printf("****Error semantico en lin %ld: Operacion aritmetica con operandos boolean.\n", nlin);
+    return -1;
+  }
+  if(($1.tipo == ENTERO) && ($3.tipo == ENTERO)){
+    sumar(out, $1.es_direccion, $3.es_direccion);
+    $$.tipo = ENTERO;
+    $$.es_direccion = INMEDIATO;
+  }
+  fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
+}
      | exp TOK_MENOS exp {fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");}
      | exp TOK_DIVISION exp {fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");}
      | exp TOK_ASTERISCO exp {fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");}
@@ -199,14 +250,30 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
      fprintf(out, ";R81:\t<exp> ::= <constante>\n");
     }
      | TOK_PARENTESISIZQUIERDO exp TOK_PARENTESISDERECHO {fprintf(out, ";R82:\t<exp> ::= ( <exp> )\n");}
-     | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");}
+     | TOK_PARENTESISIZQUIERDO comparacion TOK_PARENTESISDERECHO {
+      $$.tipo = $2.tipo;
+      $$.es_direccion = $2.es_direccion;
+      fprintf(out, ";R83:\t<exp> ::= ( <comparacion> )\n");
+     }
      | elemento_vector {fprintf(out, ";R85:\t<exp> ::= <elemento_vector>\n");}
      | TOK_IDENTIFICADOR TOK_PARENTESISIZQUIERDO lista_expresiones TOK_PARENTESISDERECHO {fprintf(out, ";R88:\t<exp> ::= <identificador> ( <lista_expresiones> )\n");};
 lista_expresiones: exp resto_lista_expresiones {fprintf(out, ";R89:\t<lista_expresiones> ::= <exp> <resto_lista_expresiones>\n");}
                    | %empty {fprintf(out, ";R90:\t<lista_expresiones> ::=\n");};
 resto_lista_expresiones: TOK_COMA exp resto_lista_expresiones {fprintf(out, ";R91:\t<resto_lista_expresiones> ::= , <exp> <resto_lista_expresiones>\n");}
                          | %empty {fprintf(out, ";R92:\t<resto_lista_expresiones> ::=\n");};
-comparacion: exp TOK_IGUAL exp {fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");}
+comparacion: exp TOK_IGUAL exp {
+  if($1.tipo == BOOLEANO || $3.tipo == BOOLEANO){
+    printf("****Error semantico en lin %ld: Comparacion con operandos boolean.\n", nlin);
+    return -1;
+  }
+  if(($1.tipo == ENTERO) && ($3.tipo == ENTERO)){
+    igual(out, $1.es_direccion, $3.es_direccion, etiquetas);
+    etiquetas += 1;
+    $$.tipo = BOOLEANO;
+    $$.es_direccion = INMEDIATO;
+  }
+  fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
+}
              | exp TOK_DISTINTO exp {fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");}
              | exp TOK_MENORIGUAL exp {fprintf(out, ";R95:\t<comparacion> ::= <exp> <= <exp>\n");}
              | exp TOK_MAYORIGUAL exp {fprintf(out, ";R96:\t<comparacion> ::= <exp> >= <exp>\n");}

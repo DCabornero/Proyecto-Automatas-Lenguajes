@@ -1,10 +1,15 @@
 CC=gcc
 CFLAGS= -Wall -g -pedantic
-EJSO = tablaHash.o tablaSimbolos.o
-TODO = tablaHash.o tablaSimbolos.o alfa programa1
+EJSO = tablaHash.o tablaSimbolos.o alfa.o generacion.o programa1.o programa2.o programa3.o programa4.o programa5.o
+ALL = tablaHash.o tablaSimbolos.o alfa programa1 programa2 programa3 programa4 programa5
+LEX = lex.yy.c lex.yy.o
+YTAB = y.output y.tab.h y.tab.o y.tab.c
+ASM = programa1.asm programa2.asm programa3.asm programa4.asm programa5.asm
+EXEC = alfa programa1 programa2 programa3 programa4 programa5
+
 
 .PHONY: all #Genera los archivos de ejecución de los programas en C
-all: $(TODO)
+all: $(ALL)
 
 generacion.o: generacion.c
 	$(CC) $(CFLAGS) -c -o generacion.o generacion.c
@@ -44,6 +49,42 @@ programa1.o: programa1.asm
 programa1: programa1.o
 	gcc -m32 -o programa1 programa1.o alfalib.o
 
+programa2.asm: alfa
+	./alfa programa2.alfa programa2.asm
+
+programa2.o: programa2.asm
+	nasm -felf32 programa2.asm
+
+programa2: programa2.o
+	gcc -m32 -o programa2 programa2.o alfalib.o
+
+programa3.asm: alfa
+	./alfa programa3.alfa programa3.asm
+
+programa3.o: programa3.asm
+	nasm -felf32 programa3.asm
+
+programa3: programa3.o
+	gcc -m32 -o programa3 programa3.o alfalib.o
+
+programa4.asm: alfa
+	./alfa programa4.alfa programa4.asm
+
+programa4.o: programa4.asm
+	nasm -felf32 programa4.asm
+
+programa4: programa4.o
+	gcc -m32 -o programa4 programa4.o alfalib.o
+
+programa5.asm: alfa
+	./alfa programa5.alfa programa5.asm
+
+programa5.o: programa5.asm
+	nasm -felf32 programa5.asm
+
+programa5: programa5.o
+	gcc -m32 -o programa5 programa5.o alfalib.o
+
 .PHONY: clean #Elimina los ejecutables, los txt de misalida, los .o y tablaHash.c
 clean:
-	rm -rf $(EJSO) lex.yy.c lex.yy.o alfa.o y.output y.tab.h y.tab.o y.tab.c generacion.o alfa programa1 programa1.o programa1.asm
+	rm -rf $(EJSO) $(LEX) $(YTAB) $(ASM) $(EXEC)
