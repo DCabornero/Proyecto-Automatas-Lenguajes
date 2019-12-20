@@ -50,7 +50,7 @@ void escribir_fin(FILE* fpasm){
   fprintf(fpasm, "    add esp, 4\n");
   fprintf(fpasm, "    mov dword esp, [__esp]\n");
   fprintf(fpasm, "    jmp near fin\n");
-  fprintf(fpasm, "fin: ret");
+  fprintf(fpasm, "fin: ret\n");
 }
 
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){

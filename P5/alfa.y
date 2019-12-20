@@ -81,12 +81,16 @@ extern FILE* out;
 %left TOK_PARENTESISIZQUIERDO TOK_PARENTESISDERECHO
 %%
 
-programa: TOK_MAIN TOK_LLAVEIZQUIERDA declaraciones escritura1 funciones escritura2 sentencias TOK_LLAVEDERECHA {fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");};
+programa: TOK_MAIN TOK_LLAVEIZQUIERDA escritura1 declaraciones funciones escritura2 sentencias TOK_LLAVEDERECHA {
+  escribir_fin(out);
+  fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
+};
 escritura1:{
-  escribir_cabecera_bss(out);
   escribir_subseccion_data(out);
+  escribir_cabecera_bss(out);
 };
 escritura2:{
+  escribir_segmento_codigo(out);
   escribir_inicio_main(out);
 };
 declaraciones: declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}
@@ -97,7 +101,7 @@ clase: clase_escalar {clase_actual=ESCALAR; fprintf(out, ";R5:\t<clase> ::= <cla
 clase_escalar: tipo {fprintf(out, ";R9:\t<clase_escalar> ::= <tipo>\n");};
 tipo: TOK_INT {tipo_actual=ENTERO; fprintf(out, ";R10:\t<tipo> ::= int\n");}
       | TOK_BOOLEAN {tipo_actual=BOOLEANO; fprintf(out, ";R11:\t<tipo> ::= boolean\n");};
-clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO constante_entera TOK_CORCHETEDERECHO {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");};
+clase_vector: TOK_ARRAY tipo TOK_CORCHETEIZQUIERDO TOK_CONSTANTE_ENTERA TOK_CORCHETEDERECHO {fprintf(out, ";R15:\t<clase_vector> ::= array <tipo> [ <constante_entera> ]\n");};
 identificadores: identificador {fprintf(out, ";R18:\t<identificadores> ::= <identificador>\n");}
                  | identificador TOK_COMA identificadores {fprintf(out, ";R19:\t<identificadores> ::= <identificador> , <identificadores>\n");};
 funciones: funcion funciones {fprintf(out, ";R20:\t<funciones> ::= <funcion> <funciones>\n");}
@@ -128,19 +132,19 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
                 simbolo_actual = usoLocal($1.lexema);
               }
               if(simbolo_actual == NULL){
-                printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).", nlin, $1.lexema);
+                printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $1.lexema);
                 return -1;
               }
               if(simbolo_actual->cat_simbolo == FUNCION){
-                printf("****Error semantico en lin %ld: Asignacion incompatible.", nlin);
+                printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
                 return -1;
               }
               if(simbolo_actual->categoria == VECTOR){
-                printf("****Error semantico en lin %ld: Asignacion incompatible.", nlin);
+                printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
                 return -1;
               }
               if(simbolo_actual->tipo != $3.tipo){
-                printf("****Error semantico en lin %ld: Asignacion incompatible.", nlin);
+                printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
                 return -1;
               }
               asignar(out, $1.lexema, $3.es_direccion);
@@ -173,15 +177,15 @@ exp: exp TOK_MAS exp {fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");}
            simbolo_actual = usoLocal($1.lexema);
          }
          if(simbolo_actual == NULL){
-           printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).", nlin, $1.lexema);
+           printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $1.lexema);
            return -1;
          }
          if(simbolo_actual->cat_simbolo == FUNCION){
-           printf("****Error semantico en lin %ld: Funcion no puede ser exp.", nlin);
+           printf("****Error semantico en lin %ld: Funcion no puede ser exp.\n", nlin);
            return -1;
          }
          if(simbolo_actual->categoria == VECTOR){
-           printf("****Error semantico en lin %ld: Vector no puede ser exp.", nlin);
+           printf("****Error semantico en lin %ld: Vector no puede ser exp.\n", nlin);
            return -1;
          }
          $$.tipo=simbolo_actual->tipo;
@@ -229,11 +233,12 @@ identificador: TOK_IDENTIFICADOR {
   simbolo_creado->tipo = tipo_actual;
   simbolo_creado->categoria = clase_actual;
   if(declarar($1.lexema, simbolo_creado) == ERROR){
-    printf("****Error semantico en lin %ld: Declaracion duplicada.", nlin);
+    printf("****Error semantico en lin %ld: Declaracion duplicada.\n", nlin);
     free(simbolo_creado);
     simbolo_creado = NULL;
     return -1;
   }
+  declarar_variable(out, $1.lexema, tipo_actual, 1);
   free(simbolo_creado);
   simbolo_creado = NULL;
   fprintf(out, ";R108:\t<identificador> ::= TOK_IDENTIFICADOR\n");

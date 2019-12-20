@@ -10,8 +10,8 @@ STATUS declarar(char* id, SIMBOLO* desc_id){
     }
     else{
       ht_set(tablaLocal, id, desc_id->cat_simbolo, desc_id->tipo, desc_id->categoria, desc_id->valor, desc_id->longitud, desc_id->num_parametros, desc_id->posicion, desc_id->num_var_locales);
+      return OK;
     }
-    return OK;
   }
   else{
     if(tablaGlobal == NULL){
@@ -22,6 +22,7 @@ STATUS declarar(char* id, SIMBOLO* desc_id){
     }
     else{
       ht_set(tablaGlobal, id, desc_id->cat_simbolo, desc_id->tipo, desc_id->categoria, desc_id->valor, desc_id->longitud, desc_id->num_parametros, desc_id->posicion, desc_id->num_var_locales);
+      return OK;
     }
   }
   return ERROR;
