@@ -42,15 +42,14 @@ void escribir_fin(FILE* fpasm){
   fprintf(fpasm, "    call print_string\n");
   fprintf(fpasm, "    call print_endofline\n");
   fprintf(fpasm, "    add esp, 4\n");
-  fprintf(fpasm, "    mov dword esp, [__esp]\n");
   fprintf(fpasm, "    jmp near fin\n");
   fprintf(fpasm, "fin_indice_fuera_rango: push dword mensaje_1\n");
   fprintf(fpasm, "    call print_string\n");
   fprintf(fpasm, "    call print_endofline\n");
   fprintf(fpasm, "    add esp, 4\n");
-  fprintf(fpasm, "    mov dword esp, [__esp]\n");
   fprintf(fpasm, "    jmp near fin\n");
-  fprintf(fpasm, "fin: ret\n");
+  fprintf(fpasm, "fin: mov dword esp, [__esp]\n");
+  fprintf(fpasm, "ret\n");
 }
 
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable){
