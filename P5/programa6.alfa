@@ -3,7 +3,7 @@ main {
 	scanf x;
 	y = 1;
 	while((x>1)) {
-		y = x*y;
+		y = x * y;
 		x = x-1;
 	}
 	printf y;
