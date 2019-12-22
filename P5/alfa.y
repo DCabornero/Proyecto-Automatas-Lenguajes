@@ -1,7 +1,5 @@
 %{
 #include "alfa.h"
-#define INMEDIATO 0
-#define VARIABLE 1
 extern long ncol;
 extern long nlin;
 extern int is_morpho;
@@ -234,8 +232,20 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
                 printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
                 return -1;
               }
-              asignar(out, $1.lexema, $3.es_direccion);
-              fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");
+              if(ambito_actual == LOCAL){
+                if(simbolo_actual->cat_simbolo == PARAMETRO){
+                  escribirParametro(out, simbolo_actual->posicion, num_parametros);
+                  asignarDestinoEnPila(out, $3.es_direccion);
+                }
+                else if(simbolo_actual->cat_simbolo == VARIABLE){
+                  escribirVariableLocal(out, simbolo_actual->posicion);
+                  asignarDestinoEnPila(out, $3.es_direccion);
+                }
+              }
+              else{
+                asignar(out, $1.lexema, $3.es_direccion);
+                fprintf(out, ";R43:\t<asignacion> ::= <identificador> = <exp>\n");
+              }
             }
             | elemento_vector TOK_ASIGNACION exp {
               if($1.tipo != $3.tipo){
@@ -243,7 +253,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
                 return -1;
               }
               sprintf(aux_itoa, "%d", $1.valor_entero);
-              escribir_operando(out, aux_itoa, INMEDIATO);
+              escribir_operando(out, aux_itoa, 0);
               escribir_elemento_vector(out, $1.lexema, simbolo_actual->longitud, $3.es_direccion);
               asignarDestinoEnPila(out, $3.es_direccion);
               fprintf(out, ";R44:\t<asignacion> ::= <elemento_vector> = <exp>\n");
@@ -260,15 +270,15 @@ elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
     return -1;
   }
   if(simbolo_actual->categoria != VECTOR){
-    printf("****Error semantico en lin %ld: Intento de indexacion de una variable que no es de tipo vector.", nlin);
+    printf("****Error semantico en lin %ld: Intento de indexacion de una variable que no es de tipo vector.\n", nlin);
     return -1;
   }
   if($3.tipo != ENTERO){
-    printf("****Error semantico en lin %ld: El indice en una operacion de indexacion tiene que ser de tipo entero.", nlin);
+    printf("****Error semantico en lin %ld: El indice en una operacion de indexacion tiene que ser de tipo entero.\n", nlin);
     return -1;
   }
   $$.tipo = simbolo_actual->tipo;
-  $$.es_direccion = VARIABLE;
+  $$.es_direccion = 1;
   $$.valor_entero = $3.valor_entero;
   strcpy($$.lexema, $1.lexema);
   escribir_elemento_vector(out, $1.lexema, simbolo_actual->longitud, $3.es_direccion);
@@ -352,7 +362,7 @@ exp: exp TOK_MAS exp {
   if(($1.tipo == ENTERO) && ($3.tipo == ENTERO)){
     sumar(out, $1.es_direccion, $3.es_direccion);
     $$.tipo = ENTERO;
-    $$.es_direccion = INMEDIATO;
+    $$.es_direccion = 0;
   }
   fprintf(out, ";R72:\t<exp> ::= <exp> + <exp>\n");
 }
@@ -364,7 +374,7 @@ exp: exp TOK_MAS exp {
      if(($1.tipo == ENTERO) && ($3.tipo == ENTERO)){
        restar(out, $1.es_direccion, $3.es_direccion);
        $$.tipo = ENTERO;
-       $$.es_direccion = INMEDIATO;
+       $$.es_direccion = 0;
      }
       fprintf(out, ";R73:\t<exp> ::= <exp> - <exp>\n");
     }
@@ -376,7 +386,7 @@ exp: exp TOK_MAS exp {
      if(($1.tipo == ENTERO) && ($3.tipo == ENTERO)){
        dividir(out, $1.es_direccion, $3.es_direccion);
        $$.tipo = ENTERO;
-       $$.es_direccion = INMEDIATO;
+       $$.es_direccion = 0;
      }
       fprintf(out, ";R74:\t<exp> ::= <exp> / <exp>\n");
      }
@@ -388,7 +398,7 @@ exp: exp TOK_MAS exp {
      if(($1.tipo == ENTERO) && ($3.tipo == ENTERO)){
        multiplicar(out, $1.es_direccion, $3.es_direccion);
        $$.tipo = ENTERO;
-       $$.es_direccion = INMEDIATO;
+       $$.es_direccion = 0;
      }
       fprintf(out, ";R75:\t<exp> ::= <exp> * <exp>\n");
     }
@@ -400,7 +410,7 @@ exp: exp TOK_MAS exp {
       if($2.tipo == ENTERO){
         cambiar_signo(out, $2.es_direccion);
         $$.tipo = ENTERO;
-        $$.es_direccion = INMEDIATO;
+        $$.es_direccion = 0;
       }
       fprintf(out, ";R76:\t<exp> ::= - <exp>\n");
      }
@@ -412,7 +422,7 @@ exp: exp TOK_MAS exp {
        if(($1.tipo == BOOLEANO) && ($3.tipo == BOOLEANO)){
          y(out, $1.es_direccion, $3.es_direccion);
          $$.tipo = BOOLEANO;
-         $$.es_direccion = INMEDIATO;
+         $$.es_direccion = 0;
        }
         fprintf(out, ";R77:\t<exp> ::= <exp> && <exp>\n");
      }
@@ -424,7 +434,7 @@ exp: exp TOK_MAS exp {
      if(($1.tipo == BOOLEANO) && ($3.tipo == BOOLEANO)){
        o(out, $1.es_direccion, $3.es_direccion);
        $$.tipo = BOOLEANO;
-       $$.es_direccion = INMEDIATO;
+       $$.es_direccion = 0;
      }
       fprintf(out, ";R78:\t<exp> ::= <exp> || <exp>\n");
 }
@@ -436,7 +446,7 @@ exp: exp TOK_MAS exp {
       if($2.tipo == BOOLEANO){
        no(out, $2.es_direccion, $2.etiqueta);
        $$.tipo = BOOLEANO;
-       $$.es_direccion = INMEDIATO;
+       $$.es_direccion = 0;
       }
       fprintf(out, ";R79:\t<exp> ::= ! <exp>\n");
      }
@@ -461,9 +471,9 @@ exp: exp TOK_MAS exp {
          }
          if(ambito_actual == LOCAL){
           if(simbolo_actual->cat_simbolo == PARAMETRO){
-            escribirParametro(out, num_parametros, simbolo_actual->posicion);
+            escribirParametro(out, simbolo_actual->posicion, num_parametros);
           }
-          if(simbolo_actual->cat_simbolo == VARIABLE){
+          else if(simbolo_actual->cat_simbolo == VARIABLE){
             escribirVariableLocal(out, simbolo_actual->posicion);
           }
           if(simbolo_actual->cat_simbolo == FUNCION){
@@ -471,9 +481,9 @@ exp: exp TOK_MAS exp {
           }
          }
          $$.tipo=simbolo_actual->tipo;
-         $$.es_direccion=VARIABLE;
+         $$.es_direccion=1;
          if(ambito_actual == GLOBAL){
-          escribir_operando(out, $1.lexema, VARIABLE);
+          escribir_operando(out, $1.lexema, 1);
          }
          fprintf(out, ";R80:\t<exp> ::= <identificador>\n");
       }
@@ -547,7 +557,7 @@ comparacion: exp TOK_IGUAL exp {
     igual(out, $1.es_direccion, $3.es_direccion, etiquetas);
     etiquetas += 1;
     $$.tipo = BOOLEANO;
-    $$.es_direccion = INMEDIATO;
+    $$.es_direccion = 0;
   }
   fprintf(out, ";R93:\t<comparacion> ::= <exp> == <exp>\n");
 }
@@ -560,7 +570,7 @@ comparacion: exp TOK_IGUAL exp {
                  distinto(out, $1.es_direccion, $3.es_direccion, etiquetas);
                  etiquetas += 1;
                  $$.tipo = BOOLEANO;
-                 $$.es_direccion = INMEDIATO;
+                 $$.es_direccion = 0;
                }
                fprintf(out, ";R94:\t<comparacion> ::= <exp> != <exp>\n");
              }
@@ -574,7 +584,7 @@ comparacion: exp TOK_IGUAL exp {
                  menor_igual(out, $1.es_direccion, $3.es_direccion, etiquetas);
                  etiquetas += 1;
                  $$.tipo = BOOLEANO;
-                 $$.es_direccion = INMEDIATO;
+                 $$.es_direccion = 0;
                }
                fprintf(out, ";R96:\t<comparacion> ::= <exp> <= <exp>\n");
              }
@@ -588,7 +598,7 @@ comparacion: exp TOK_IGUAL exp {
                  mayor_igual(out, $1.es_direccion, $3.es_direccion, etiquetas);
                  etiquetas += 1;
                  $$.tipo = BOOLEANO;
-                 $$.es_direccion = INMEDIATO;
+                 $$.es_direccion = 0;
                }
                fprintf(out, ";R97:\t<comparacion> ::= <exp> >= <exp>\n");
               }
@@ -602,7 +612,7 @@ comparacion: exp TOK_IGUAL exp {
                 menor(out, $1.es_direccion, $3.es_direccion, etiquetas);
                 etiquetas += 1;
                 $$.tipo = BOOLEANO;
-                $$.es_direccion = INMEDIATO;
+                $$.es_direccion = 0;
               }
               fprintf(out, ";R98:\t<comparacion> ::= <exp> < <exp>\n");
              }
@@ -616,7 +626,7 @@ comparacion: exp TOK_IGUAL exp {
                mayor(out, $1.es_direccion, $3.es_direccion, etiquetas);
                etiquetas += 1;
                $$.tipo = BOOLEANO;
-               $$.es_direccion = INMEDIATO;
+               $$.es_direccion = 0;
              }
               fprintf(out, ";R98:\t<comparacion> ::= <exp> > <exp>\n");
             };
@@ -632,24 +642,24 @@ constante: constante_logica {
 constante_logica: TOK_TRUE {
   $$.tipo = BOOLEANO;
   $$.es_direccion = 0;
-  escribir_operando(out, "1", INMEDIATO);
+  escribir_operando(out, "1", 0);
   fprintf(out, ";R102:\t<constante_logica> ::= true\n");
 }
                   | TOK_FALSE {
   $$.tipo = BOOLEANO;
   $$.es_direccion = 0;
-  escribir_operando(out, "0", INMEDIATO);
+  escribir_operando(out, "0", 0);
   fprintf(out, ";R103:\t<constante_logica> ::= false\n");
 };
 constante_entera: TOK_CONSTANTE_ENTERA {
   $$.tipo = ENTERO;
   $$.es_direccion = 0;
   $$.valor_entero = $1.valor_entero;
-  escribir_operando(out, $1.lexema, INMEDIATO);
+  escribir_operando(out, $1.lexema, 0);
   fprintf(out, ";R104:\t<constante_entera> ::= TOK_CONSTANTE_ENTERA\n");
 };
 identificador: TOK_IDENTIFICADOR {
-  if(clase_actual == VECTOR && (tamanio_vector < 0 || tamanio_vector > 64)){
+  if(clase_actual == VECTOR && (tamanio_vector <= 0 || tamanio_vector > 64)){
     printf("****Error semantico en lin %ld: El tamanyo del vector <%s> excede los limites permitidos (1,64).\n", nlin, $1.lexema);
     return -1;
   }
@@ -666,8 +676,8 @@ identificador: TOK_IDENTIFICADOR {
       free(simbolo_creado);
       return -1;
     }
-    simbolo_creado->posicion = num_variables_locales;
     num_variables_locales++;
+    simbolo_creado->posicion = num_variables_locales;
   }
   else{
     if(clase_actual == VECTOR){
