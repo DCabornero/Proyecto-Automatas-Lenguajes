@@ -5,7 +5,7 @@ ALL = tablaHash.o tablaSimbolos.o alfa programa1 programa2 programa3 programa4 p
 LEX = lex.yy.c lex.yy.o
 YTAB = y.output y.tab.h y.tab.o y.tab.c
 ASM = programa1.asm programa2.asm programa3.asm programa4.asm programa5.asm programa6.asm programa7.asm programa8.asm
-EXEC = alfa programa1 programa2 programa3 programa4 programa5 programa6 programa7 programa8.asm
+EXEC = alfa programa1 programa2 programa3 programa4 programa5 programa6 programa7 programa8
 
 
 .PHONY: all #Genera los archivos de ejecución de los programas en C
