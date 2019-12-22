@@ -1,11 +1,11 @@
 CC=gcc
 CFLAGS= -Wall -g -pedantic
-EJSO = tablaHash.o tablaSimbolos.o alfa.o generacion.o programa1.o programa2.o programa3.o programa4.o programa5.o programa6.o programa7.o
-ALL = tablaHash.o tablaSimbolos.o alfa programa1 programa2 programa3 programa4 programa5 programa6 programa7
+EJSO = tablaHash.o tablaSimbolos.o alfa.o generacion.o programa1.o programa2.o programa3.o programa4.o programa5.o programa6.o programa7.o programa8.o
+ALL = tablaHash.o tablaSimbolos.o alfa programa1 programa2 programa3 programa4 programa5 programa6 programa7 programa8
 LEX = lex.yy.c lex.yy.o
 YTAB = y.output y.tab.h y.tab.o y.tab.c
-ASM = programa1.asm programa2.asm programa3.asm programa4.asm programa5.asm programa6.asm programa7.asm
-EXEC = alfa programa1 programa2 programa3 programa4 programa5 programa6 programa7
+ASM = programa1.asm programa2.asm programa3.asm programa4.asm programa5.asm programa6.asm programa7.asm programa8.asm
+EXEC = alfa programa1 programa2 programa3 programa4 programa5 programa6 programa7 programa8.asm
 
 
 .PHONY: all #Genera los archivos de ejecución de los programas en C
@@ -102,6 +102,15 @@ programa7.o: programa7.asm
 
 programa7: programa7.o
 	gcc -m32 -o programa7 programa7.o alfalib.o
+
+programa8.asm: alfa
+	./alfa programa8.alfa programa8.asm
+
+programa8.o: programa8.asm
+	nasm -felf32 programa8.asm
+
+programa8: programa8.o
+	gcc -m32 -o programa8 programa8.o alfalib.o
 
 .PHONY: clean #Elimina los ejecutables, los txt de misalida, los .o y tablaHash.c
 clean:

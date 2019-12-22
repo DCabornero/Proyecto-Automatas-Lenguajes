@@ -9,8 +9,8 @@ void escribir_cabecera_bss(FILE* fpasm){
 
 void escribir_subseccion_data(FILE* fpasm){
   fprintf(fpasm, "segment .data\n");
-  fprintf(fpasm, "mensaje_0 db \"Error: División por 0\", 0\n");
-  fprintf(fpasm, "mensaje_1 db \"Error: Índice fuera de rango\", 0\n");
+  fprintf(fpasm, "mensaje_0 db \"****Error de ejecucion: Division por cero.\", 0\n");
+  fprintf(fpasm, "mensaje_1 db \"****Error de ejecucion: Indice fuera de rango.\", 0\n");
 }
 
 void declarar_variable(FILE* fpasm, char * nombre, int tipo, int tamano){
@@ -489,7 +489,7 @@ void operandoEnPilaAArgumento(FILE* fpasm, int es_variable){
 }
 
 void llamarFuncion(FILE* fpasm, char* nombre_funcion, int num_argumentos){
-  fprintf(fpasm, "call %s\n", nombre_funcion);
+  fprintf(fpasm, "call _%s\n", nombre_funcion);
   fprintf(fpasm, "add esp, %d*4\n", num_argumentos);
   fprintf(fpasm, "push dword eax\n");
 }
