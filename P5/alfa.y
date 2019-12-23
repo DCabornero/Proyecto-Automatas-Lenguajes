@@ -100,14 +100,14 @@ programa: TOK_MAIN TOK_LLAVEIZQUIERDA escritura1 declaraciones escritura2 funcio
   escribir_fin(out);
   fprintf(out, ";R1:\t<programa> ::= main { <declaraciones> <funciones> <sentencias> }\n");
 };
-escritura1:{
+escritura1: %empty{
   escribir_subseccion_data(out);
   escribir_cabecera_bss(out);
 };
-escritura2:{
+escritura2: %empty{
   escribir_segmento_codigo(out);
 }
-escritura3:{
+escritura3: %empty{
   escribir_inicio_main(out);
 };
 declaraciones: declaracion {fprintf(out, ";R2:\t<declaraciones> ::= <declaracion>\n");}

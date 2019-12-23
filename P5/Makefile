@@ -11,6 +11,9 @@ EXEC = alfa programa1 programa2 programa3 programa4 programa5 programa6 programa
 .PHONY: all #Genera los archivos de ejecución de los programas en C
 all: $(ALL)
 
+%.c: %.y
+%.c: %.l
+
 generacion.o: generacion.c
 	$(CC) $(CFLAGS) -c -o generacion.o generacion.c
 
