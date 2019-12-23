@@ -1,11 +1,16 @@
 main {
-	int a;
-	function boolean f(int b){
+	boolean a;
+	function boolean f(boolean b){
 		boolean d;
-		d = true;
-		return d;
+		d = b;
+		a = b;
+		printf b;
+		a = false;
+		d = a;
+		printf d;
+		printf a;
+		return b;
 	}
-	a = 4;
-	a = f(2);
+	a = f(true);
 	printf (a);
 }

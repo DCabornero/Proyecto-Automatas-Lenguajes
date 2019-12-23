@@ -220,7 +220,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
                 }
               }
               if(simbolo_actual == NULL){
-                printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $1.lexema);
+                printf("****Error semantico en lin %ld: Acceso a variable no declarada(%s).\n", nlin, $1.lexema);
                 return -1;
               }
               if(simbolo_actual->cat_simbolo == FUNCION){
@@ -272,7 +272,7 @@ elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO
     simbolo_actual = usoGlobal($1.lexema);
   }
   if(simbolo_actual == NULL){
-    printf("****Error semantico en lin %ld: Acceso a variable no declarada (<%s>).\n", nlin, $1.lexema);
+    printf("****Error semantico en lin %ld: Acceso a variable no declarada (%s).\n", nlin, $1.lexema);
     return -1;
   }
   if(simbolo_actual->categoria != VECTOR){
@@ -336,7 +336,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {
     }
   }
   if(simbolo_actual == NULL){
-    printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $2.lexema);
+    printf("****Error semantico en lin %ld: Acceso a variable no declarada(%s).\n", nlin, $2.lexema);
   }
   if(simbolo_actual->cat_simbolo == FUNCION){
     printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
@@ -540,7 +540,7 @@ fun_call: TOK_IDENTIFICADOR TOK_PARENTESISIZQUIERDO{
   }
   simbolo_actual = usoGlobal($1.lexema);
   if(simbolo_actual == NULL){
-    printf("****Error semantico en lin %ld: Llamada a funcion no declarada %s", nlin, $1.lexema);
+    printf("****Error semantico en lin %ld: Llamada a funcion no declarada %s.\n", nlin, $1.lexema);
   }
 
   strcpy($$.lexema, $1.lexema);
@@ -673,7 +673,7 @@ constante_entera: TOK_CONSTANTE_ENTERA {
 };
 identificador: TOK_IDENTIFICADOR {
   if(clase_actual == VECTOR && (tamanio_vector <= 0 || tamanio_vector > 64)){
-    printf("****Error semantico en lin %ld: El tamanyo del vector <%s> excede los limites permitidos (1,64).\n", nlin, $1.lexema);
+    printf("****Error semantico en lin %ld: El tamanyo del vector %s excede los limites permitidos (1,64).\n", nlin, $1.lexema);
     return -1;
   }
   simbolo_creado = (SIMBOLO*)calloc(1, sizeof(SIMBOLO));
