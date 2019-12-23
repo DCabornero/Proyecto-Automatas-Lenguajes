@@ -140,13 +140,13 @@ funcion: fn_declaration sentencias TOK_LLAVEDERECHA {
   cerrarFuncion();
   ambito_actual = GLOBAL;
   simbolo_actual = usoGlobal($1.lexema);
-  simbolo_actual->num_parametros = num_parametros;
   simbolo_actual->cat_simbolo = FUNCION;
   fprintf(out, ";R22:\t<funcion> ::= function <tipo> <identificador> ( <parametros_funcion> ) { <declaraciones_funcion> <sentencias> }\n");
 };
 
 fn_declaration: fn_name TOK_PARENTESISIZQUIERDO parametros_funcion TOK_PARENTESISDERECHO TOK_LLAVEIZQUIERDA declaraciones_funcion {
   simbolo_actual = usoGlobal($1.lexema);
+  simbolo_actual->num_parametros = num_parametros;
   strcpy($$.lexema, $1.lexema);
   $$.tipo = $1.tipo;
   declararFuncion(out, $1.lexema, num_variables_locales);
@@ -161,7 +161,7 @@ fn_name: TOK_FUNCTION tipo TOK_IDENTIFICADOR{
     return -1;
   }
   simbolo_creado = (SIMBOLO*)calloc(1, sizeof(SIMBOLO));
-  simbolo_creado->categoria = FUNCION;
+  simbolo_creado->cat_simbolo = FUNCION;
   simbolo_creado->tipo = tipo_actual;
   declararFuncionTS($3.lexema, simbolo_creado);
   free(simbolo_creado);
@@ -215,6 +215,9 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
               }
               else{
                 simbolo_actual = usoLocal($1.lexema);
+                if(simbolo_actual == NULL){
+                  simbolo_actual = usoGlobal($1.lexema);
+                }
               }
               if(simbolo_actual == NULL){
                 printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $1.lexema);
@@ -261,6 +264,9 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
 elemento_vector: TOK_IDENTIFICADOR TOK_CORCHETEIZQUIERDO exp TOK_CORCHETEDERECHO {
   if(ambito_actual == LOCAL){
     simbolo_actual = usoLocal($1.lexema);
+    if(simbolo_actual == NULL){
+      simbolo_actual = usoGlobal($1.lexema);
+    }
   }
   else{
     simbolo_actual = usoGlobal($1.lexema);
@@ -325,6 +331,9 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR {
   }
   else{
     simbolo_actual = usoLocal($2.lexema);
+    if(simbolo_actual == NULL){
+      simbolo_actual = usoGlobal($2.lexema);
+    }
   }
   if(simbolo_actual == NULL){
     printf("****Error semantico en lin %ld: Acceso a variable no declarada(<%s>).\n", nlin, $2.lexema);
@@ -456,6 +465,9 @@ exp: exp TOK_MAS exp {
          }
          else{
            simbolo_actual = usoLocal($1.lexema);
+           if(simbolo_actual == NULL){
+             simbolo_actual = usoGlobal($1.lexema);
+           }
          }
          if(simbolo_actual == NULL){
            printf("****Error semantico en lin %ld: Acceso a variable no declarada(%s).\n", nlin, $1.lexema);
@@ -469,7 +481,9 @@ exp: exp TOK_MAS exp {
            printf("****Error semantico en lin %ld: Vector no puede ser exp.\n", nlin);
            return -1;
          }
-         if(ambito_actual == LOCAL){
+         simbolo_actual = usoGlobal($1.lexema);
+         if(ambito_actual == LOCAL && simbolo_actual == NULL){
+          simbolo_actual = usoLocal($1.lexema);
           if(simbolo_actual->cat_simbolo == PARAMETRO){
             escribirParametro(out, simbolo_actual->posicion, num_parametros);
           }
@@ -482,7 +496,7 @@ exp: exp TOK_MAS exp {
          }
          $$.tipo=simbolo_actual->tipo;
          $$.es_direccion=1;
-         if(ambito_actual == GLOBAL){
+         if(ambito_actual == GLOBAL || usoGlobal($1.lexema)){
           escribir_operando(out, $1.lexema, 1);
          }
          fprintf(out, ";R80:\t<exp> ::= <identificador>\n");
