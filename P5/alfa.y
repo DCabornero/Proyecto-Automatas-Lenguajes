@@ -481,8 +481,7 @@ exp: exp TOK_MAS exp {
            printf("****Error semantico en lin %ld: Vector no puede ser exp.\n", nlin);
            return -1;
          }
-         simbolo_actual = usoGlobal($1.lexema);
-         if(ambito_actual == LOCAL && simbolo_actual == NULL){
+         if(ambito_actual == LOCAL && usoLocal($1.lexema)){
           simbolo_actual = usoLocal($1.lexema);
           if(simbolo_actual->cat_simbolo == PARAMETRO){
             escribirParametro(out, simbolo_actual->posicion, num_parametros);
@@ -496,7 +495,7 @@ exp: exp TOK_MAS exp {
          }
          $$.tipo=simbolo_actual->tipo;
          $$.es_direccion=1;
-         if(ambito_actual == GLOBAL || usoGlobal($1.lexema)){
+         if(ambito_actual == GLOBAL || (!usoLocal($1.lexema) && usoGlobal($1.lexema))){
           escribir_operando(out, $1.lexema, 1);
          }
          fprintf(out, ";R80:\t<exp> ::= <identificador>\n");

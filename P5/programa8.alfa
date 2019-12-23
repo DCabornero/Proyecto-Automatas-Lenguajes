@@ -4,6 +4,7 @@ main
 
     function int suma (int num1; int num2)
     {
+        printf (x);
         return num1+num2;
     }
 
