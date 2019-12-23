@@ -1,26 +1,11 @@
-main
-{
-    int x, y, resultado;
-
-    function int suma (int num1; int num2)
-    {
-        printf (x);
-        return num1+num2;
-    }
-
-    x = 1;
-    y = 3;
-
-    resultado = suma (x,y);
-    printf resultado;
-
-    resultado = suma (x,1);
-    printf resultado;
-
-    resultado = suma (10,y);
-    printf resultado;
-
-    resultado = suma (3,5);
-    printf resultado;
-
+main {
+	int a;
+	function boolean f(int b){
+		boolean d;
+		d = true;
+		return d;
+	}
+	a = 4;
+	a = f(2);
+	printf (a);
 }

@@ -68,7 +68,8 @@ void asignar(FILE* fpasm, char* nombre, int es_variable){
     fprintf(fpasm, "mov [_%s], ebx\n", nombre);
   }
   else if(es_variable == VARIABLE){
-    fprintf(fpasm, "mov [_%s], [ebx]\n", nombre);
+    fprintf(fpasm, "mov ebx, [ebx]\n");
+    fprintf(fpasm, "mov [_%s], ebx\n", nombre);
   }
 }
 

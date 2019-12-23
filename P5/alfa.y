@@ -235,7 +235,7 @@ asignacion: TOK_IDENTIFICADOR TOK_ASIGNACION exp {
                 printf("****Error semantico en lin %ld: Asignacion incompatible.\n", nlin);
                 return -1;
               }
-              if(ambito_actual == LOCAL){
+              if(ambito_actual == LOCAL && usoLocal($1.lexema)){
                 if(simbolo_actual->cat_simbolo == PARAMETRO){
                   escribirParametro(out, simbolo_actual->posicion, num_parametros);
                   asignarDestinoEnPila(out, $3.es_direccion);
