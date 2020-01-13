@@ -19,6 +19,16 @@ struct _tipo_atributos{
   int es_direccion;
   int etiqueta;
 };
-
+/*Asociatividad Previa:
+%right TOK_ASIGNACION
+%left TOK_OR
+%left TOK_AND
+%left TOK_IGUAL TOK_DISTINTO
+%left TOK_MENOR TOK_MENORIGUAL TOK_MAYOR TOK_MAYORIGUAL
+%left TOK_MAS TOK_MENOS
+%left TOK_DIVISION TOK_ASTERISCO
+%right TOK_NOT
+%left TOK_PARENTESISIZQUIERDO TOK_PARENTESISDERECHO
+*/
 
 #endif
