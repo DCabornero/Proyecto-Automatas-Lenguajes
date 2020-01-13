@@ -453,7 +453,8 @@ exp: exp TOK_MAS exp {
         return -1;
       }
       if($2.tipo == BOOLEANO){
-       no(out, $2.es_direccion, $2.etiqueta);
+       no(out, $2.es_direccion, etiquetas);
+       etiquetas += 1;
        $$.tipo = BOOLEANO;
        $$.es_direccion = 0;
       }
